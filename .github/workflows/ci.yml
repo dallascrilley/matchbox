@@ -12,14 +12,13 @@ jobs:
   test:
     name: tests (python ${{ matrix.python-version }} on ${{ matrix.os }})
     runs-on: ${{ matrix.os }}
+    # macOS bills at 10x Linux. The macOS legs run for pushes to main only;
+    # every other branch push and pull request runs the ubuntu legs.
+    if: ${{ matrix.os != 'macos-latest' || (github.event_name == 'push' && github.ref == 'refs/heads/main') }}
     strategy:
       fail-fast: false
       matrix:
         os: [ubuntu-latest, macos-latest]
-
-    # macOS bills at 10x Linux. The macOS legs run for pushes to main only;
-    # every other branch push and pull request runs the ubuntu legs.
-    if: ${{ matrix.os != 'macos-latest' || (github.event_name == 'push' && github.ref == 'refs/heads/main') }}
         python-version: ["3.12", "3.13"]
     steps:
       - uses: actions/checkout@v4
